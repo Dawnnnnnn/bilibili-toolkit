@@ -12,6 +12,7 @@ request = Request()
 printer = Printer()
 
 
+# 取消关注 (直播站接口)
 async def delete_follow(follow_uid, cookie, csrf, suname):
     url = "https://api.live.bilibili.com/liveact/attention"
     data = {
@@ -30,6 +31,7 @@ async def delete_follow(follow_uid, cookie, csrf, suname):
     printer.printer(f"取消关注{follow_uid}回显:{response}", "INFO", "blue")
 
 
+# 根据勋章id删除勋章
 async def delete_medal(medal_id, cookie, csrf, suname):
     url = "https://api.live.bilibili.com/i/ajaxDeleteMyFansMedal"
     data = {
@@ -46,6 +48,7 @@ async def delete_medal(medal_id, cookie, csrf, suname):
     printer.printer(f"删除勋章{medal_id}回显:{response}", "INFO", "blue")
 
 
+# 根据粉丝uid删除粉丝
 async def delete_fans(fan_uid, cookie, csrf, suname):
     url = "https://api.bilibili.com/x/relation/modify"
     data = {
@@ -64,6 +67,7 @@ async def delete_fans(fan_uid, cookie, csrf, suname):
     printer.printer(f"删除粉丝{fan_uid}回显:{response}", "INFO", "blue")
 
 
+# 根据收藏夹id删除收藏夹
 async def delete_favorite_pack(media_ids, cookie, csrf, suname):
     url = "https://api.bilibili.com/medialist/gateway/base/del"
     data = {
@@ -80,6 +84,7 @@ async def delete_favorite_pack(media_ids, cookie, csrf, suname):
     printer.printer(f"删除收藏夹{media_ids}回显:{response}", "INFO", "blue")
 
 
+# 根据动态id删除动态
 async def del_dynamic_by_id(uid, dy_id, cookie, access_key, suname):
     url = 'https://api.vc.bilibili.com/dynamic_repost/v1/dynamic_repost/rm_rp_dyn'
     temp_data = f"_device=android&_hwid=SX1NL0wuHCsaKRt4BHhIfRguTXxOfj5WN1BkBTdLfhstTn9NfUouFiUV&access_key={access_key}&appkey=1d8b6e7d45233436&build=5310300&dynamic_id={dy_id}&mobi_app=android&platform=android&src=meizu&trace_id=20180909020900047&ts={CurrentTime() * 1000}&uid={uid}&version=5.31.3.5310300"
@@ -94,6 +99,7 @@ async def del_dynamic_by_id(uid, dy_id, cookie, access_key, suname):
     printer.printer(f"删除动态{dy_id}回显:{response}", "INFO", "blue")
 
 
+# 获取所有关注的另一种写法
 # async def get_all_follows(uid, cookie, suname):
 #     url = f"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid={uid}&host_uid={uid}"
 #     headers = {
@@ -104,7 +110,7 @@ async def del_dynamic_by_id(uid, dy_id, cookie, access_key, suname):
 #     response = json.loads(response)
 #     return response
 
-
+# 获取所有关注人
 async def get_all_follows(cookie, suname):
     follows = []
     page = 1
@@ -126,6 +132,7 @@ async def get_all_follows(cookie, suname):
     return follows
 
 
+# 获取没有互粉的关注人
 async def get_all_follows_not_6(cookie, suname):
     follows = []
     page = 1
@@ -148,6 +155,7 @@ async def get_all_follows_not_6(cookie, suname):
     return follows
 
 
+# 获取所有勋章
 async def get_all_medal(cookie, suname):
     url = "https://api.live.bilibili.com/i/api/medal?page=1&pageSize=30"
     headers = {
@@ -159,6 +167,7 @@ async def get_all_medal(cookie, suname):
     return response
 
 
+# 获取自己的100个粉丝
 async def get_all_fans(cookie, suname):
     """
     印象中这个删除粉丝，每小时有数量限制，先设置成清除100个
@@ -178,6 +187,7 @@ async def get_all_fans(cookie, suname):
     return response
 
 
+# 获取所有收藏夹id
 async def get_all_favorite_pack(uid, cookie, suname):
     url = f"https://api.bilibili.com/x/space/fav/nav?mid={uid}"
     headers = {
@@ -189,6 +199,7 @@ async def get_all_favorite_pack(uid, cookie, suname):
     return response
 
 
+# 获取所有动态id
 async def get_all_dynamic(uid, cookie, access_key, suname):
     dy_id = 0
     dy_uid_list = []
@@ -215,36 +226,42 @@ async def get_all_dynamic(uid, cookie, access_key, suname):
     return dy_uid_list
 
 
+# 清空自己的关注人
 async def delete_all_follows(cookie, csrf, suname):
     follows = await get_all_follows(cookie, suname)
     for follow_uid in follows:
         await delete_follow(follow_uid, cookie, csrf, suname)
 
 
+# 清空自己的所有勋章
 async def delete_all_medals(cookie, csrf, suname):
     response = await get_all_medal(cookie, suname)
     for k in range(0, len(response['data']['fansMedalList'])):
         await delete_medal(response['data']['fansMedalList']['id'], cookie, csrf, suname)
 
 
+# 清空自己的全部粉丝
 async def delete_all_fans(cookie, csrf, suname):
     response = await get_all_fans(cookie, suname)
     for k in range(0, len(response['data']['list'])):
         await delete_fans(response['data']['list']['mid'], cookie, csrf, suname)
 
 
+# 清空自己的所有收藏夹
 async def delete_all_favorite_pack(uid, cookie, csrf, suname):
     response = await get_all_favorite_pack(uid, cookie, suname)
     for k in range(0, len(response['data']['archive'])):
         await delete_favorite_pack(response['data']['archive']['media_id'], cookie, csrf, suname)
 
 
+# 清空所有的动态
 async def delete_all_dynamic_ids(uid, cookie, access_key, suname):
     dynamic_ids = await get_all_dynamic(uid, cookie, access_key, suname)
     for dy_id in dynamic_ids:
         await del_dynamic_by_id(uid, dy_id, cookie, access_key, suname)
 
 
+# 关注
 async def follow(follow_uid, cookie, csrf, suname):
     url = "https://api.bilibili.com/x/relation/modify"
     data = {
@@ -263,6 +280,7 @@ async def follow(follow_uid, cookie, csrf, suname):
     printer.printer(f"关注{follow_uid}回显:{response}", "INFO", "blue")
 
 
+# 取消关注 (主站接口)
 async def unfollow(follow_uid, cookie, csrf, suname):
     url = "https://api.bilibili.com/x/relation/modify"
     data = {
@@ -281,6 +299,7 @@ async def unfollow(follow_uid, cookie, csrf, suname):
     printer.printer(f"取关{follow_uid}回显:{response}", "INFO", "blue")
 
 
+# 删除没有互粉的粉丝
 async def delete_not_exchange_fans(cookie, csrf, suname):
     response = await get_all_fans(cookie, suname)
     for k in range(0, len(response['data']['list'])):
@@ -288,12 +307,14 @@ async def delete_not_exchange_fans(cookie, csrf, suname):
             await delete_fans(response['data']['list']['mid'], cookie, csrf, suname)
 
 
+# 删除没有互粉的关注人
 async def delete_not_exchange_follows(cookie, csrf, suname):
     follows = await get_all_follows_not_6(cookie, suname)
     for follow_uid in follows:
         await delete_follow(follow_uid, cookie, csrf, suname)
 
 
+# 视频av转cid
 async def get_av_cid(aid, cookie, suname):
     url = f"https://api.bilibili.com/x/player/pagelist?aid={aid}"
     headers = {
@@ -309,6 +330,7 @@ async def get_av_cid(aid, cookie, suname):
     return cid
 
 
+# 随机得到一个av号
 async def get_attention_video_or_random(cookie, suname):
     follows = await get_all_follows(cookie, suname)
     video_list = []
@@ -338,6 +360,7 @@ async def get_attention_video_or_random(cookie, suname):
                 continue
 
 
+# 随机分享一个视频，用于完成每日任务
 async def share_random(cookie, access_key, suname):
     av_num = await get_attention_video_or_random(cookie, suname)
     url = "https://app.bilibili.com/x/v2/view/share/add"
@@ -364,6 +387,7 @@ async def share_random(cookie, access_key, suname):
     printer.printer(f"分享视频{av_num}回显:{response}", "INFO", "blue")
 
 
+# 根据av号分享视频
 async def share(av_num, access_key, suname):
     url = "https://app.bilibili.com/x/v2/view/share/add"
     headers = {
@@ -389,6 +413,7 @@ async def share(av_num, access_key, suname):
     printer.printer(f"分享视频{av_num}回显:{response}", "INFO", "blue")
 
 
+# 随机观看一个视频，用于完成每日任务
 async def watch_av_random(uid, csrf, cookie, suname):
     av_num = await get_attention_video_or_random(cookie, suname)
     url = "https://api.bilibili.com/x/report/web/heartbeat"
@@ -415,6 +440,7 @@ async def watch_av_random(uid, csrf, cookie, suname):
     printer.printer(f"观看视频{av_num}回显:{response}", "INFO", "blue")
 
 
+# 根据av号观看视频
 async def watch_av(av_num, uid, csrf, cookie, suname):
     url = "https://api.bilibili.com/x/report/web/heartbeat"
     headers = {
@@ -440,6 +466,7 @@ async def watch_av(av_num, uid, csrf, cookie, suname):
     printer.printer(f"观看视频{av_num}回显:{response}", "INFO", "blue")
 
 
+# 根据av号一键三连
 async def combo(aid, csrf, cookie, suname):
     url = f"https://api.bilibili.com/x/web-interface/archive/like/triple"
     data = {
