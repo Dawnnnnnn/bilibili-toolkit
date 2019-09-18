@@ -28,6 +28,7 @@ class Request:
         self.req_done_dict = {}
         self.req_alive_num = 20
         self.req_timeout_max = 60
+        self.form_data = aiohttp.FormData()
 
     # 请求中心
     async def _requests(self, verify_token, method, url, proxy=False,
@@ -72,6 +73,25 @@ class Request:
                     async with session.get(url, headers=headers,
                                            timeout=10, proxy=proxy,
                                            verify_ssl=False) as r:
+                        # text()函数相当于requests中的r.text，r.read()相当于requests中的r.content
+                        data = await r.text()
+                        await r.release()
+                        return data
+
+            except Exception as e:
+                printer.printer(f"{url}{e}", "Error", "red")
+                flag -= 1
+                continue
+
+    # 其他GET请求
+    async def other_file_post(self, url, headers=None, data=None):
+        flag = 10
+        while True:
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(url, headers=headers, data=data,
+                                            timeout=10,
+                                            verify_ssl=False) as r:
                         # text()函数相当于requests中的r.text，r.read()相当于requests中的r.content
                         data = await r.text()
                         await r.release()

@@ -6,6 +6,8 @@
 from requests_utils import Request
 import random
 from os_utils import *
+from io import BytesIO
+from PIL import Image
 import json
 
 request = Request()
@@ -481,3 +483,217 @@ async def combo(aid, csrf, cookie, suname):
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
     printer.printer(f"三连视频{aid}回显:{response}", "INFO", "blue")
+
+
+# 主站信息获取 接口 1
+async def userinfo_1(uid, cookie, suname):
+    """
+    ['data']['silence'] == 1 封禁
+                        == 0 未封禁
+    {"code":0,"message":"0","ttl":1,"data":{"mid":385028182,"name":"孙宏涛医生","sex":"男","face":"http://i0.hdslb.com/bfs/face/e8ba84ced6a4343fd8d089ca7ff0fe5615d26645.jpg","sign":"在我所不知道的世界里，你无拘无束，笑靥如花","rank":5000,"level":0,"jointime":0,"moral":0,"silence":1,"birthday":"01-01","coins":0,"fans_badge":false,"official":{"role":0,"title":"","desc":""},"vip":{"type":1,"status":0,"theme_type":0},"is_followed":false,"top_photo":"http://i1.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png","theme":{},"sys_notice":{}}}
+    :param uid:
+    :param cookie:
+    :param suname:
+    :return:
+    """
+    url = f"https://api.bilibili.com/x/space/acc/info?mid={uid}&jsonp=jsonp"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"获取{uid}用户信息(封禁)API回显:{response}", "INFO", "blue")
+
+
+# 主站信息获取 接口 1
+async def userinfo_2(cookie, suname):
+    """
+    {"code":0,"status":true,"data":{"level_info":{"current_level":6,"current_min":28800,"current_exp":35885,"next_exp":-1},"bCoins":0,"coins":884.4,"face":"http:\/\/i1.hdslb.com\/bfs\/face\/99eaeca54df1c0f7ed2cce1c7bb7de6c27010b47.jpg","nameplate_current":"http:\/\/i1.hdslb.com\/bfs\/face\/03e2eb0a10ba3f495498075e483bcb869eac5e58.png","pendant_current":"","uname":"\u309a\u66d9\u5149","userStatus":"\u6b63\u5f0f\u4f1a\u5458","vipType":2,"vipStatus":1,"official_verify":-1,"pointBalance":250}}
+    :param cookie:
+    :param suname:
+    :return:
+    """
+    url = "https://account.bilibili.com/home/userInfo"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"获取用户信息(主站信息)API回显:{response}", "INFO", "blue")
+
+
+async def userinfo_3(cookie, suname):
+    """
+    {"code":0,"message":"0","ttl":1,"data":{"isLogin":true,"email_verified":1,"face":"http://i0.hdslb.com/bfs/face/99eaeca54df1c0f7ed2cce1c7bb7de6c27010b47.jpg","level_info":{"current_level":6,"current_min":28800,"current_exp":35885,"next_exp":"--"},"mid":48766812,"mobile_verified":1,"money":884.4,"moral":70,"official":{"role":0,"title":"","desc":""},"officialVerify":{"type":-1,"desc":""},"pendant":{"pid":0,"name":"","image":"","expire":0},"scores":0,"uname":"゚曙光","vipDueDate":1696521600000,"vipStatus":1,"vipType":2,"vip_pay_type":0,"vip_theme_type":0,"wallet":{"mid":48766812,"bcoin_balance":0,"coupon_balance":0,"coupon_due_time":0},"has_shop":false,"shop_url":"","allowance_count":0,"answer_status":0}}
+    :param cookie:
+    :param suname:
+    :return:
+    """
+    url = "https://api.bilibili.com/x/web-interface/nav"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"获取用户信息(主站信息2)API回显:{response}", "INFO", "blue")
+
+
+# 直播站信息获取 接口 1
+async def userinfo_4(cookie, suname):
+    """
+    {"code":0,"message":"0","ttl":1,"data":{"uid":48766812,"uname":"゚曙光","face":"https://i0.hdslb.com/bfs/face/99eaeca54df1c0f7ed2cce1c7bb7de6c27010b47.jpg","billCoin":884.4,"silver":6787813,"gold":5100,"achieve":1575,"vip":1,"svip":0,"user_level":55,"user_next_level":56,"user_intimacy":30488760,"user_next_intimacy":200000000,"is_level_top":0,"user_level_rank":"621","user_charged":0}}
+    :param cookie:
+    :param suname:
+    :return:
+    """
+    url = "https://api.live.bilibili.com/xlive/web-ucenter/user/get_user_info"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"获取用户信息(直播站信息)API回显:{response}", "INFO", "blue")
+
+
+# 获取一言以伪造签名
+async def get_sentence():
+    types = ["a", "b", "c", "d", "e", "f", "g"]
+    c = random.choice(types)
+    url = f"https://v1.hitokoto.cn?c={c}&encode=json&charset=utf-8"
+    response = await request.other_get(url)
+    response = json.loads(response)
+    hitokoto = response['hitokoto']
+    while len(hitokoto) >= 70:
+        response = await request.other_get(url)
+        response = json.loads(response)
+        hitokoto = response['hitokoto']
+    return hitokoto
+
+
+# 获取头像图片
+async def get_image(suname):
+    url = "https://acg.toubiec.cn/random.php?return=json"
+    response = await request.other_get(url)
+    response = json.loads(response)
+    img_url = response['acgurl']
+    printer.printer("成功获取到图片url", "DEBUG", "yellow")
+    response = await request.req_add_job('get', img_url, suname=suname)
+    f = BytesIO()
+    f.write(response)
+    img = Image.open(f)
+    img.thumbnail((180, 180))
+    f11 = BytesIO()
+    img.save(f11, format="jpeg")
+    return f11
+
+
+# 上传头像，我猜有bug
+async def upload_image(cookie, suname):
+    f11 = await get_image(suname)
+    # data = {"dopost": "save", "DisplayRank": "10000"}
+    # files = {'face': ('blob', f11.getvalue(), "image/jpeg")}
+    url = "http://account.bilibili.com/pendant/updateFace"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+        "Cookie": cookie
+    }
+    data = request.form_data
+    data.add_field('face', f11.getvalue(), content_type='image/jpeg')
+    data.add_field('dopost', 'save')
+    data.add_field('DisplayRank', '10000')
+    response = await request.req_add_job('post', url, data=data, headers=headers, suname=suname)
+    response = json.loads(response)
+    return response
+
+
+# 根据av号和收藏夹id添加到收藏夹
+async def add_something_to_favorite_pack(aid, media_id, cookie, csrf, suname):
+    url = "https://api.bilibili.com/medialist/gateway/coll/resource/deal"
+    """
+    rid=67971547&type=2&add_media_ids=96944812&del_media_ids=&jsonp=jsonp&csrf=31e8d38c966b36cbe10c560d172f5d4f
+    """
+    data = {
+        "rid": aid,
+        "type": 2,
+        "add_media_ids": media_id,
+        "del_media_ids": "",
+        "jsonp": "jsonp",
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Referer": f"https://www.bilibili.com/video/av{aid}",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"收藏视频{aid}回显:{response}", "INFO", "blue")
+
+
+# 随机获取一些up主uid
+async def get_follow_uid_list(suname):
+    page = random.randint(0, 25)
+    url = f"https://api.live.bilibili.com/room/v1/room/get_user_recommend?page={page}"
+    response = await request.req_add_job('get', url, suname=suname)
+    response = json.loads(response)
+    return response
+
+
+# 获取50个番剧id
+async def get_bangumi_list(suname):
+    url = "https://api.bilibili.com/pgc/season/index/result?season_version=-1&area=-1&is_finish=-1&copyright=-1&season_status=-1&season_month=-1&year=-1&style_id=-1&order=3&st=1&sort=0&page=1&season_type=1&pagesize=50&type=1"
+    response = await request.req_add_job('get', url, suname=suname)
+    response = json.loads(response)
+    return response
+
+
+# 追番
+async def add_bangumi_to_follow(season_id, cookie, csrf, suname):
+    url = "https://api.bilibili.com/pgc/web/follow/add"
+    data = {
+        "season_id": season_id,
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"添加追番{season_id}回显:{response}", "INFO", "blue")
+
+
+# 取消追番
+async def del_bangumi_in_follow(season_id, cookie, csrf, suname):
+    url = "https://api.bilibili.com/pgc/web/follow/del"
+    data = {
+        "season_id": season_id,
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"取消追番{season_id}回显:{response}", "INFO", "blue")
+
+
+# 订阅标签
+async def add_tag(tag_id, cookie, csrf, suname):
+    url = "https://api.bilibili.com/x/tag/subscribe/add"
+    data = {
+        "tag_id": tag_id,
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"订阅标签{tag_id}回显:{response}", "INFO", "blue")
