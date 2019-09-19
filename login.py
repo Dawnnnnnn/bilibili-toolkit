@@ -17,6 +17,7 @@ class BiliLogin:
 
     def __init__(self):
         self.cookie = ""
+        self.access_token = ""
 
     def post(self, url, data=None, headers=None, json=None, decode=True,
              timeout=10):
@@ -85,10 +86,11 @@ class BiliLogin:
         if response and response.get('code') == 0:
             self.cookie = ";".join(f"{i['name']}={i['value']}" for i in
                                    response['data']['cookie_info']['cookies'])
-            printer.printer(f"{self.username}登录成功 {self.cookie}", "Running", "green")
+            self.access_token = response['data']['token_info']['access_token']
+            printer.printer(f"{self.username}登录成功 {self.cookie} {self.access_token}", "Running", "green")
             with open("cookie.txt", "a+", encoding="utf-8")as f:
                 f.write(self.cookie + "\n")
-            return self.username, self.cookie
+            return self.username, self.cookie, self.access_token
         else:
             printer.printer(f"{self.username}登录失败 {response}", "Error", "red")
             delete_data("accounts.txt", f"{self.username}----{self.password}")

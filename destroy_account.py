@@ -6,7 +6,7 @@
 from apis import *
 
 
-async def run(uid, access_key, cookie, csrf, suname):
+async def destory_account_run(uid, access_key, cookie, csrf, suname):
     # 删除关注
     await delete_all_follows(cookie, csrf, suname)
     # 删除粉丝

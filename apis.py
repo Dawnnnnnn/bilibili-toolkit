@@ -11,7 +11,6 @@ from PIL import Image
 import json
 
 request = Request()
-printer = Printer()
 
 
 # 取消关注 (直播站接口)
@@ -126,7 +125,7 @@ async def get_all_follows(cookie, suname):
         response = json.loads(response)
         if response['data']['list']:
             for k in range(0, len(response['data']['list'])):
-                follows.append(response['data']['list'][k]['mid'])
+                follows.append(response['data']['list'][k]['uid'])
             page = page + 1
             continue
         else:
@@ -135,11 +134,11 @@ async def get_all_follows(cookie, suname):
 
 
 # 获取没有互粉的关注人
-async def get_all_follows_not_6(cookie, suname):
+async def get_all_follows_not_6(uid,cookie, suname):
     follows = []
     page = 1
     while 1:
-        url = f"https://api.live.bilibili.com/i/api/following?page={page}&pageSize=20"
+        url = f"https://api.bilibili.com/x/relation/followings?vmid={uid}&pn={page}&ps=20&order=desc&jsonp=jsonp"
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36",
             "Cookie": cookie
@@ -170,7 +169,7 @@ async def get_all_medal(cookie, suname):
 
 
 # 获取自己的100个粉丝
-async def get_all_fans(cookie, suname):
+async def get_all_fans(uid,cookie, suname):
     """
     印象中这个删除粉丝，每小时有数量限制，先设置成清除100个
     :param cookie:
@@ -179,7 +178,7 @@ async def get_all_fans(cookie, suname):
     :return:
     """
 
-    url = "https://api.bilibili.com/x/relation/followers?vmid=48766812&pn=1&ps=100&order=desc"
+    url = f"https://api.bilibili.com/x/relation/followers?vmid={uid}&pn=1&ps=100&order=desc"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36",
         "Cookie": cookie
@@ -215,14 +214,15 @@ async def get_all_dynamic(uid, cookie, access_key, suname):
         }
 
         response = await request.req_add_job("get", url, headers=headers, suname=suname)
-        exist = (response.json()['data']['has_more'])
+        response = json.loads(response)
+        exist = (response['data']['has_more'])
         if exist == 0:
             break
-        _len = len(response.json()['data']['cards'])
+        _len = len(response['data']['cards'])
         for i in range(0, _len):
-            dyid = response.json()['data']['cards'][i]['desc']['dynamic_id']
+            dyid = response['data']['cards'][i]['desc']['dynamic_id']
             dy_uid_list.append(dyid)
-        dy_id = response.json()['data']['cards'][_len - 1]['desc']['dynamic_id']
+        dy_id = response['data']['cards'][_len - 1]['desc']['dynamic_id']
         start = start + 1
         continue
     return dy_uid_list
@@ -246,7 +246,7 @@ async def delete_all_medals(cookie, csrf, suname):
 async def delete_all_fans(cookie, csrf, suname):
     response = await get_all_fans(cookie, suname)
     for k in range(0, len(response['data']['list'])):
-        await delete_fans(response['data']['list']['mid'], cookie, csrf, suname)
+        await delete_fans(response['data']['list'][k]['mid'], cookie, csrf, suname)
 
 
 # 清空自己的所有收藏夹
@@ -326,7 +326,7 @@ async def get_av_cid(aid, cookie, suname):
     response = await request.req_add_job('get', url, headers=headers, suname=suname)
     response = json.loads(response)
     if response['code'] == 0:
-        cid = response['data']['cid']
+        cid = response['data'][0]['cid']
     else:
         cid = 0
     return cid
@@ -344,9 +344,9 @@ async def get_attention_video_or_random(cookie, suname):
         }
         response = await request.req_add_job('get', url, headers=headers, suname=suname)
         response = json.loads(response)
-        datalen = len(response.json()['data']['vlist'])
+        datalen = len(response['data']['vlist'])
         for i in range(0, datalen):
-            aid = response.json()['data']['vlist'][i]['aid']
+            aid = response['data']['vlist'][i]['aid']
             video_list.append(aid)
         if len(video_list) >= 5:
             break
@@ -664,7 +664,8 @@ async def add_bangumi_to_follow(season_id, cookie, csrf, suname):
     }
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
-        "Cookie": cookie
+        "Cookie": cookie,
+        "Referer": f"https://www.bilibili.com/bangumi/play/ss{season_id}/"
     }
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
@@ -680,7 +681,8 @@ async def del_bangumi_in_follow(season_id, cookie, csrf, suname):
     }
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
-        "Cookie": cookie
+        "Cookie": cookie,
+        "Referer": f"https://www.bilibili.com/bangumi/play/ss{season_id}/"
     }
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
@@ -758,3 +760,25 @@ async def update_info(uname, cookie, csrf, suname):
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
     printer.printer(f"更新用户基本信息回显:{response}", "INFO", "blue")
+
+
+async def send_danmu(msg, roomid, cookie, csrf, suname):
+    url = "https://api.live.bilibili.com/msg/send"
+    data = {
+        "color": 16777215,
+        "fontsize": 25,
+        "mode": 1,
+        "msg": msg,
+        "rnd": 0,
+        "roomid": roomid,
+        "bubble": 0,
+        "csrf_token": csrf,
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"发送弹幕{msg}回显:{response}", "INFO", "blue")
