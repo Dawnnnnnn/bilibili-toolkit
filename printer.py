@@ -6,6 +6,9 @@
 import time
 import inspect
 from termcolor import *
+from colorama import init
+
+init()
 
 
 class Printer:

@@ -134,7 +134,7 @@ async def get_all_follows(cookie, suname):
 
 
 # 获取没有互粉的关注人
-async def get_all_follows_not_6(uid,cookie, suname):
+async def get_all_follows_not_6(uid, cookie, suname):
     follows = []
     page = 1
     while 1:
@@ -169,7 +169,7 @@ async def get_all_medal(cookie, suname):
 
 
 # 获取自己的100个粉丝
-async def get_all_fans(uid,cookie, suname):
+async def get_all_fans(uid, cookie, suname):
     """
     印象中这个删除粉丝，每小时有数量限制，先设置成清除100个
     :param cookie:
@@ -706,7 +706,7 @@ async def add_tag(tag_id, cookie, csrf, suname):
 
 
 # 设置各种不可见
-async def set_private(action, uid,cookie, csrf, suname):
+async def set_private(action, uid, cookie, csrf, suname):
     """
     fav_video
     bangumi
@@ -764,6 +764,7 @@ async def update_info(uname, cookie, csrf, suname):
     printer.printer(f"更新用户基本信息回显:{response}", "INFO", "blue")
 
 
+# 直播间发送弹幕
 async def send_danmu(msg, roomid, cookie, csrf, suname):
     url = "https://api.live.bilibili.com/msg/send"
     data = {
@@ -784,3 +785,71 @@ async def send_danmu(msg, roomid, cookie, csrf, suname):
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
     printer.printer(f"发送弹幕{msg}回显:{response}", "INFO", "blue")
+
+
+# 硬币换勋章
+async def coin_to_medal(buy_uid, cookie, suname):
+    url = f"https://api.vc.bilibili.com/link_group/v1/member/buy_medal?coin_type=metal&master_uid={buy_uid}&platform=android"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"硬币购买勋章回显:{response}", "INFO", "blue")
+    return response
+
+
+# 银瓜子换硬币
+async def sliver_to_coin(cookie, csrf, suname):
+    url = "https://api.live.bilibili.com/pay/v1/Exchange/silver2coin"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    data = {
+        "platform": "pc",
+        "csrf_token": csrf
+    }
+    response = await request.req_add_job('post', url, data=data, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"银瓜子兑换硬币回显:{response}", "INFO", "blue")
+    return response
+
+
+# 查询直播站实物礼物列表
+async def query_live_reward(access_key, suname):
+    url = f"https://api.live.bilibili.com/lottery/v1/Award/award_list?access_key={access_key}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 BiliDroid/5.31.3 (bbcallen@gmail.com)"
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"{suname}查询直播站实物礼物回显:{response['data']['list']}", "INFO", "blue")
+    return response
+
+
+# 参与实物抽奖
+async def draw_lottery(aid, number, cookie, suname):
+    url = f"https://api.live.bilibili.com/lottery/v1/box/draw?aid={aid}&number={number}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"{suname}实物抽奖编号{aid}第{number}轮次回显:{response}", "INFO", "blue")
+    return response
+
+
+# 查询最新一条系统通知
+async def query_system_notice(cookie, suname):
+    url = "https://message.bilibili.com/api/notify/query.sysnotify.list.do?data_type=1"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"{suname}最新一条系统通知回显:{response['data'][0]['content']}", "INFO", "blue")
+    return response

@@ -19,6 +19,10 @@ from clean_not_follow_fan import *
 from wear_medal import *
 from send_danmu import *
 from set_private import *
+from coin_to_medal import *
+from sliver_to_coin import *
+from query_live_reward import *
+from query_system_notice import *
 
 config = toml.load('config.toml')
 
@@ -90,8 +94,21 @@ class Main():
             roomid = config['send_danmu']['roomid']
             await send_danmu_run(msg, roomid, cookie, csrf, username)
         if config['set_private']['enable']:
-            for action in ['fav_video','bangumi','tags','coins_video','user_info','played_game']:
-                await set_private_run(action,uid,cookie,csrf,username)
+            for action in ['fav_video', 'bangumi', 'tags', 'coins_video', 'user_info', 'played_game']:
+                await set_private_run(action, uid, cookie, csrf, username)
+        if config['coin_to_medal']['enable']:
+            buy_uid = config['coin_to_medal']['buy_uid']
+            await coin_to_medal_run(buy_uid, cookie, username)
+        if config['sliver_to_coin']['enable']:
+            await sliver_to_coin_run(cookie, csrf, username)
+        if config['query_live_reward']['enable']:
+            await query_live_reward_run(access_token, username)
+        if config['draw_lottery']['enable']:
+            aid = config['draw_lottery']['aid']
+            number = config['draw_lottery']['number']
+            await draw_lottery(aid, number, cookie, username)
+        if config['query_system_notice']['enable']:
+            await query_system_notice_run(cookie, username)
 
 
 Main().run()
