@@ -9,7 +9,37 @@ import asyncio
 import time
 import datetime
 import hashlib
+
 printer = Printer()
+
+
+# 删除文本数据
+def delete_data(filename, mark):
+    while True:
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            with open(filename, "w", encoding="utf-8") as f_w:
+                for line in lines:
+                    if mark in line:
+                        continue
+                    f_w.write(line)
+            printer.printer('删除文本完成', "Running", "green")
+            break
+        except Exception as e:
+            printer.printer(f'删除文本失败 {e}', "Error", "red")
+
+
+# 写入文本数据
+def insert_data(filename, data):
+    while True:
+        try:
+            with open(filename, "a+", encoding="utf-8") as f:
+                f.write(data + "\n")
+            printer.printer('写入文件成功!', "Running", "green")
+            break
+        except Exception as e:
+            printer.printer(f'写入文件失败!{e}', "Error", "red")
 
 
 def get_accounts_file(filename):

@@ -83,24 +83,7 @@ class Request:
                 flag -= 1
                 continue
 
-    # 其他GET请求
-    async def other_file_post(self, url, headers=None, data=None):
-        flag = 10
-        while True:
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data,
-                                            timeout=10,
-                                            verify_ssl=False) as r:
-                        # text()函数相当于requests中的r.text，r.read()相当于requests中的r.content
-                        data = await r.text()
-                        await r.release()
-                        return data
 
-            except Exception as e:
-                printer.printer(f"{url}{e}", "Error", "red")
-                flag -= 1
-                continue
 
     # 加入请求任务
     async def req_add_job(self, *args, **kwargs):

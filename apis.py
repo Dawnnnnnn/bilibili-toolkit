@@ -697,3 +697,39 @@ async def add_tag(tag_id, cookie, csrf, suname):
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
     printer.printer(f"订阅标签{tag_id}回显:{response}", "INFO", "blue")
+
+
+async def set_private(action, cookie, csrf, suname):
+    """
+    fav_video
+    bangumi
+    tags
+    coins_video
+    user_info
+    played_game
+    :return:
+    """
+    url = "http://space.bilibili.com/ajax/settings/setPrivacy"
+    data = {
+        action: 0,
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"设置隐私{action}回显:{response}", "INFO", "blue")
+
+
+async def wear_medal(medal, cookie, suname):
+    url = f"https://api.live.bilibili.com/i/ajaxWearFansMedal?medal_id={medal}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('get', url, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"佩戴勋章{medal}回显:{response}", "INFO", "blue")

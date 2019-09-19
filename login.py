@@ -4,15 +4,12 @@
 # @Author  : Dawnnnnnn
 # @Contact: 1050596704@qq.com
 import base64
-import hashlib
 import random
 import requests
 import rsa
 import string
-import sys
-import time
-from termcolor import *
 from urllib import parse
+from os_utils import *
 
 
 class BiliLogin:
@@ -38,19 +35,6 @@ class BiliLogin:
         except:
             return None
 
-    def current_time(self):
-        tmp = str(
-            time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-        return "[" + tmp + "]"
-
-    def log(self, string, info, color):
-        ctm = self.current_time()
-        tmp = "[" + str(info) + "]"
-        print(colored(
-            "{:<22}{:<15}{:<20}".format(str(ctm), str(tmp), str(string)),
-            color))
-        sys.stdout.flush()
-
     def getSign(self, param):
         salt = "560c52ccd288fed045859ed18bffd973"
         signHash = hashlib.md5()
@@ -70,7 +54,7 @@ class BiliLogin:
             pubKey = rsa.PublicKey.load_pkcs1_openssl_pem(
                 response['data']['key'].encode())
         else:
-            self.log(f"Key获取失败 {response}", "Error", "red")
+            printer.printer(f"Key获取失败 {response}", "Error", "red")
             return False
         url = "https://passport.bilibili.com/api/v2/oauth2/login"
         param = f"appkey={appKey}&password={parse.quote_plus(base64.b64encode(rsa.encrypt(f'{keyHash}{self.password}'.encode(), pubKey)))}&username={parse.quote_plus(self.username)}"
@@ -91,7 +75,7 @@ class BiliLogin:
             img = str(img, encoding="utf-8")
             json = {'image': img}
             response = self.post(url, json=json, decode=True)
-            self.log(f"验证码识别结果为: {response['message']}", "Running", "green")
+            printer.printer(f"验证码识别结果为: {response['message']}", "Running", "green")
             url = "https://passport.bilibili.com/api/v2/oauth2/login"
             param = f"appkey={appKey}&captcha={response['message']}&password={parse.quote_plus(base64.b64encode(rsa.encrypt(f'{keyHash}{self.password}'.encode(), pubKey)))}&username={parse.quote_plus(self.username)}"
             data = f"{param}&sign={self.getSign(param)}"
@@ -101,9 +85,11 @@ class BiliLogin:
         if response and response.get('code') == 0:
             self.cookie = ";".join(f"{i['name']}={i['value']}" for i in
                                    response['data']['cookie_info']['cookies'])
-            self.log(f"{self.username}登录成功 {self.cookie}", "Running", "green")
+            printer.printer(f"{self.username}登录成功 {self.cookie}", "Running", "green")
             with open("cookie.txt", "a+", encoding="utf-8")as f:
                 f.write(self.cookie + "\n")
             return self.username, self.cookie
         else:
-            self.log(f"{self.username}登录失败 {response}", "Error", "red")
+            printer.printer(f"{self.username}登录失败 {response}", "Error", "red")
+            delete_data("accounts.txt", f"{self.username}----{self.password}")
+            insert_data('is_ban.txt', f"{self.username}----{self.password}")
