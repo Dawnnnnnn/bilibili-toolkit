@@ -503,7 +503,8 @@ async def userinfo_1(uid, cookie, suname):
     }
     response = await request.req_add_job('get', url, headers=headers, suname=suname)
     response = json.loads(response)
-    printer.printer(f"获取{uid}用户信息(封禁)API回显:{response}", "INFO", "blue")
+    printer.printer(f"获取{uid}用户信息(封禁)API回显:{response}", "DEBUG", "yellow")
+    return response
 
 
 # 主站信息获取 接口 1
@@ -521,7 +522,8 @@ async def userinfo_2(cookie, suname):
     }
     response = await request.req_add_job('get', url, headers=headers, suname=suname)
     response = json.loads(response)
-    printer.printer(f"获取用户信息(主站信息)API回显:{response}", "INFO", "blue")
+    printer.printer(f"获取用户信息(主站信息)API回显:{response}", "DEBUG", "yellow")
+    return response
 
 
 async def userinfo_3(cookie, suname):
@@ -538,7 +540,8 @@ async def userinfo_3(cookie, suname):
     }
     response = await request.req_add_job('get', url, headers=headers, suname=suname)
     response = json.loads(response)
-    printer.printer(f"获取用户信息(主站信息2)API回显:{response}", "INFO", "blue")
+    printer.printer(f"获取用户信息(主站信息2)API回显:{response}", "DEBUG", "yellow")
+    return response
 
 
 # 直播站信息获取 接口 1
@@ -556,7 +559,8 @@ async def userinfo_4(cookie, suname):
     }
     response = await request.req_add_job('get', url, headers=headers, suname=suname)
     response = json.loads(response)
-    printer.printer(f"获取用户信息(直播站信息)API回显:{response}", "INFO", "blue")
+    printer.printer(f"获取用户信息(直播站信息)API回显:{response}", "DEBUG", "yellow")
+    return response
 
 
 # 获取一言以伪造签名
@@ -636,7 +640,7 @@ async def add_something_to_favorite_pack(aid, media_id, cookie, csrf, suname):
 
 # 随机获取一些up主uid
 async def get_follow_uid_list(suname):
-    page = random.randint(0, 25)
+    page = random.randint(1, 25)
     url = f"https://api.live.bilibili.com/room/v1/room/get_user_recommend?page={page}"
     response = await request.req_add_job('get', url, suname=suname)
     response = json.loads(response)
@@ -699,6 +703,7 @@ async def add_tag(tag_id, cookie, csrf, suname):
     printer.printer(f"订阅标签{tag_id}回显:{response}", "INFO", "blue")
 
 
+# 设置各种不可见
 async def set_private(action, cookie, csrf, suname):
     """
     fav_video
@@ -723,6 +728,7 @@ async def set_private(action, cookie, csrf, suname):
     printer.printer(f"设置隐私{action}回显:{response}", "INFO", "blue")
 
 
+# 佩戴勋章
 async def wear_medal(medal, cookie, suname):
     url = f"https://api.live.bilibili.com/i/ajaxWearFansMedal?medal_id={medal}"
 
@@ -733,3 +739,22 @@ async def wear_medal(medal, cookie, suname):
     response = await request.req_add_job('get', url, headers=headers, suname=suname)
     response = json.loads(response)
     printer.printer(f"佩戴勋章{medal}回显:{response}", "INFO", "blue")
+
+
+# 更新签名，出生年月，性别信息
+async def update_info(uname, cookie, csrf, suname):
+    url = "https://api.bilibili.com/x/member/web/update"
+    data = {
+        "uname": uname,
+        "usersign": await get_sentence(),
+        "sex": random.choice(['男', '女', '保密']),
+        "birthday": random.choice(['1970-01-01', '2000-09-10', '2002-03-12']),
+        "csrf": csrf
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"更新用户基本信息回显:{response}", "INFO", "blue")

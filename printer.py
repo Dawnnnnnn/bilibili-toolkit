@@ -16,11 +16,12 @@ class Printer:
 
     # 格式化打印
     def printer(self, string, info, color):
-        ctm = self.current_time()
-        tmp = "[" + str(info) + "]"
-        row = "[" + str(inspect.stack()[1][3]) + ":" + str(
-            inspect.stack()[1][2]) + "]"
-        msg = (
-            "{:<22}{:<10}{:<28}{:<20}".format(str(ctm), str(tmp), str(row),
-                                              str(string)))
-        print(colored(msg, color), flush=True)
+        if info != "DEBUG":
+            ctm = self.current_time()
+            tmp = "[" + str(info) + "]"
+            row = "[" + str(inspect.stack()[1][3]) + ":" + str(
+                inspect.stack()[1][2]) + "]"
+            msg = (
+                "{:<22}{:<10}{:<28}{:<20}".format(str(ctm), str(tmp), str(row),
+                                                  str(string)))
+            print(colored(msg, color), flush=True)
