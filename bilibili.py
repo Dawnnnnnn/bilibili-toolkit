@@ -18,6 +18,7 @@ from clean_not_follow_up import *
 from clean_not_follow_fan import *
 from wear_medal import *
 from send_danmu import *
+from set_private import *
 
 config = toml.load('config.toml')
 
@@ -88,6 +89,9 @@ class Main():
             msg = config['send_danmu']['msg']
             roomid = config['send_danmu']['roomid']
             await send_danmu_run(msg, roomid, cookie, csrf, username)
+        if config['set_private']['enable']:
+            for action in ['fav_video','bangumi','tags','coins_video','user_info','played_game']:
+                await set_private_run(action,uid,cookie,csrf,username)
 
 
 Main().run()

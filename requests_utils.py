@@ -27,7 +27,7 @@ class Request:
         self.req_work_list = []
         self.req_done_dict = {}
         self.req_alive_num = 20
-        self.req_timeout_max = 60
+        self.req_timeout_max = 30
         self.form_data = aiohttp.FormData()
 
     # 请求中心

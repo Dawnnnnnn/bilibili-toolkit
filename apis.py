@@ -706,7 +706,7 @@ async def add_tag(tag_id, cookie, csrf, suname):
 
 
 # 设置各种不可见
-async def set_private(action, cookie, csrf, suname):
+async def set_private(action, uid,cookie, csrf, suname):
     """
     fav_video
     bangumi
@@ -723,7 +723,9 @@ async def set_private(action, cookie, csrf, suname):
     }
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
-        "Cookie": cookie
+        "Cookie": cookie,
+        'Origin': "https://space.bilibili.com",
+        'Referer': f"https://space.bilibili.com/{uid}/",
     }
     response = await request.req_add_job('post', url, headers=headers, data=data, suname=suname)
     response = json.loads(response)
