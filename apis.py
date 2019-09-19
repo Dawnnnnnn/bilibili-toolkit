@@ -853,3 +853,45 @@ async def query_system_notice(cookie, suname):
     response = json.loads(response)
     printer.printer(f"{suname}最新一条系统通知回显:{response['data'][0]['content']}", "INFO", "blue")
     return response
+
+
+# 给评论点赞
+async def comment_like(oid, otype, rpid, cookie, csrf, suname):
+    url = "https://api.bilibili.com/x/v2/reply/action"
+    data = {
+        'oid': oid,
+        'type': otype,
+        'rpid': rpid,
+        'action': 1,
+        'jsonp': "jsonp",
+        'csrf': csrf,
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, data=data, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"评论点赞回显:{response}", "INFO", "blue")
+    return response
+
+
+# 给评论点踩
+async def comment_hate(oid, otype, rpid, cookie, csrf, suname):
+    url = "https://api.bilibili.com/x/v2/reply/hate"
+    data = {
+        'oid': oid,
+        'type': otype,
+        'rpid': rpid,
+        'action': 1,
+        'jsonp': "jsonp",
+        'csrf': csrf,
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+        "Cookie": cookie
+    }
+    response = await request.req_add_job('post', url, data=data, headers=headers, suname=suname)
+    response = json.loads(response)
+    printer.printer(f"评论点踩回显:{response}", "INFO", "blue")
+    return response

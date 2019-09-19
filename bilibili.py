@@ -8,21 +8,23 @@ import toml
 import re
 import aiohttp
 import os
-from check_account_state import *
-from make_fake_userinfo import *
-from level_task import *
-from clean_dynamic import *
-from follow import *
 from combo import *
-from clean_not_follow_up import *
-from clean_not_follow_fan import *
+from follow import *
+from level_task import *
 from wear_medal import *
 from send_danmu import *
 from set_private import *
+from comment_like import *
+from comment_hate import *
 from coin_to_medal import *
+from clean_dynamic import *
 from sliver_to_coin import *
 from query_live_reward import *
+from make_fake_userinfo import *
+from check_account_state import *
 from query_system_notice import *
+from clean_not_follow_up import *
+from clean_not_follow_fan import *
 
 config = toml.load('config.toml')
 
@@ -109,6 +111,16 @@ class Main():
             await draw_lottery(aid, number, cookie, username)
         if config['query_system_notice']['enable']:
             await query_system_notice_run(cookie, username)
+        if config['comment_like']['enable']:
+            otype = config['comment_like']['type']
+            oid = config['comment_like']['oid']
+            rpid = config['comment_like']['rpid']
+            await comment_like_run(oid, otype, rpid, cookie, csrf, username)
+        if config['comment_hate']['enable']:
+            otype = config['comment_hate']['type']
+            oid = config['comment_hate']['oid']
+            rpid = config['comment_hate']['rpid']
+            await comment_hate_run(oid, otype, rpid, cookie, csrf, username)
 
 
 Main().run()
