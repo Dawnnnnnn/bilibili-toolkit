@@ -3,12 +3,12 @@
 # @Time    : 2019/9/17 22:45
 # @Author  : Dawnnnnnn
 # @Contact: 1050596704@qq.com
-from requests_utils import Request
-import random
-from os_utils import *
-from io import BytesIO
-from PIL import Image
 import json
+import random
+from utils import *
+from PIL import Image
+from io import BytesIO
+from network import Request
 
 request = Request()
 
@@ -490,7 +490,6 @@ async def userinfo_1(uid, cookie, suname):
     """
     ['data']['silence'] == 1 封禁
                         == 0 未封禁
-    {"code":0,"message":"0","ttl":1,"data":{"mid":385028182,"name":"孙宏涛医生","sex":"男","face":"http://i0.hdslb.com/bfs/face/e8ba84ced6a4343fd8d089ca7ff0fe5615d26645.jpg","sign":"在我所不知道的世界里，你无拘无束，笑靥如花","rank":5000,"level":0,"jointime":0,"moral":0,"silence":1,"birthday":"01-01","coins":0,"fans_badge":false,"official":{"role":0,"title":"","desc":""},"vip":{"type":1,"status":0,"theme_type":0},"is_followed":false,"top_photo":"http://i1.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png","theme":{},"sys_notice":{}}}
     :param uid:
     :param cookie:
     :param suname:
@@ -510,7 +509,6 @@ async def userinfo_1(uid, cookie, suname):
 # 主站信息获取 接口 1
 async def userinfo_2(cookie, suname):
     """
-    {"code":0,"status":true,"data":{"level_info":{"current_level":6,"current_min":28800,"current_exp":35885,"next_exp":-1},"bCoins":0,"coins":884.4,"face":"http:\/\/i1.hdslb.com\/bfs\/face\/99eaeca54df1c0f7ed2cce1c7bb7de6c27010b47.jpg","nameplate_current":"http:\/\/i1.hdslb.com\/bfs\/face\/03e2eb0a10ba3f495498075e483bcb869eac5e58.png","pendant_current":"","uname":"\u309a\u66d9\u5149","userStatus":"\u6b63\u5f0f\u4f1a\u5458","vipType":2,"vipStatus":1,"official_verify":-1,"pointBalance":250}}
     :param cookie:
     :param suname:
     :return:
@@ -528,7 +526,6 @@ async def userinfo_2(cookie, suname):
 
 async def userinfo_3(cookie, suname):
     """
-    {"code":0,"message":"0","ttl":1,"data":{"isLogin":true,"email_verified":1,"face":"http://i0.hdslb.com/bfs/face/99eaeca54df1c0f7ed2cce1c7bb7de6c27010b47.jpg","level_info":{"current_level":6,"current_min":28800,"current_exp":35885,"next_exp":"--"},"mid":48766812,"mobile_verified":1,"money":884.4,"moral":70,"official":{"role":0,"title":"","desc":""},"officialVerify":{"type":-1,"desc":""},"pendant":{"pid":0,"name":"","image":"","expire":0},"scores":0,"uname":"゚曙光","vipDueDate":1696521600000,"vipStatus":1,"vipType":2,"vip_pay_type":0,"vip_theme_type":0,"wallet":{"mid":48766812,"bcoin_balance":0,"coupon_balance":0,"coupon_due_time":0},"has_shop":false,"shop_url":"","allowance_count":0,"answer_status":0}}
     :param cookie:
     :param suname:
     :return:
@@ -547,7 +544,6 @@ async def userinfo_3(cookie, suname):
 # 直播站信息获取 接口 1
 async def userinfo_4(cookie, suname):
     """
-    {"code":0,"message":"0","ttl":1,"data":{"uid":48766812,"uname":"゚曙光","face":"https://i0.hdslb.com/bfs/face/99eaeca54df1c0f7ed2cce1c7bb7de6c27010b47.jpg","billCoin":884.4,"silver":6787813,"gold":5100,"achieve":1575,"vip":1,"svip":0,"user_level":55,"user_next_level":56,"user_intimacy":30488760,"user_next_intimacy":200000000,"is_level_top":0,"user_level_rank":"621","user_charged":0}}
     :param cookie:
     :param suname:
     :return:
@@ -617,9 +613,6 @@ async def upload_image(cookie, suname):
 # 根据av号和收藏夹id添加到收藏夹
 async def add_something_to_favorite_pack(aid, media_id, cookie, csrf, suname):
     url = "https://api.bilibili.com/medialist/gateway/coll/resource/deal"
-    """
-    rid=67971547&type=2&add_media_ids=96944812&del_media_ids=&jsonp=jsonp&csrf=31e8d38c966b36cbe10c560d172f5d4f
-    """
     data = {
         "rid": aid,
         "type": 2,

@@ -3,33 +3,17 @@
 # @Time    : 2019/9/16 22:17
 # @Author  : Dawnnnnnn
 # @Contact: 1050596704@qq.com
-from login import BiliLogin
-import toml
 import re
-import aiohttp
 import os
-from combo import *
-from follow import *
-from level_task import *
-from wear_medal import *
-from send_danmu import *
-from set_private import *
-from comment_like import *
-from comment_hate import *
-from coin_to_medal import *
-from clean_dynamic import *
-from sliver_to_coin import *
-from query_live_reward import *
-from make_fake_userinfo import *
-from check_account_state import *
-from query_system_notice import *
-from clean_not_follow_up import *
-from clean_not_follow_fan import *
+import toml
+import aiohttp
+from functions import *
+from login import BiliLogin
 
 config = toml.load('config.toml')
 
 
-class Main():
+class Main:
     def __init__(self):
         self.accounts = []
         self.cookies = []

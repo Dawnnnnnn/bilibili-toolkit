@@ -9,7 +9,7 @@ import requests
 import rsa
 import string
 from urllib import parse
-from os_utils import *
+from utils import *
 
 
 class BiliLogin:
