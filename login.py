@@ -88,8 +88,8 @@ class BiliLogin:
                                    response['data']['cookie_info']['cookies'])
             self.access_token = response['data']['token_info']['access_token']
             printer.printer(f"{self.username}登录成功 {self.cookie} {self.access_token}", "Running", "green")
-            with open("cookie.txt", "a+", encoding="utf-8")as f:
-                f.write(self.cookie + "\n")
+            with open("cookies.txt", "a+", encoding="utf-8")as f:
+                f.write(f"{self.username}----{self.cookie}----{self.access_token}\n")
             return self.username, self.cookie, self.access_token
         else:
             printer.printer(f"{self.username}登录失败 {response}", "Error", "red")

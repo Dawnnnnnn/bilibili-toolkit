@@ -1,0 +1,7 @@
+aiohttp
+requests
+termcolor
+colorama
+pillow
+rsa
+toml

@@ -1,0 +1,90 @@
+# 获取用户信息
+[get_user_info]
+enable = true # 开关
+
+# 清空账号资产/信息
+[destory_account]
+enable = false
+
+# 制造高仿信息
+[make_fake_userinfo]
+enable = false
+
+# 每日任务(观看/分享/登陆)
+[level_task]
+enable = false
+
+# 一键五连(点赞/投币/收藏/观看/分享)
+[combo]
+enable = false
+av_list = [21389666,21389665]
+
+# 清空动态
+[clean_dynamic]
+enable = false
+
+# 关注
+[follow]
+enable = false
+uid_list = [1,2,3,4,5]
+
+# 清空没关注自己的up
+[clean_not_follow_up]
+enable = false
+
+# 清空自己没回粉的粉丝
+[clean_not_follow_fan]
+enable = false
+
+# 佩戴勋章
+[wear_medal]
+enable = false
+medal_id = 5432
+
+# 发送弹幕
+[send_danmu]
+enable = false
+msg = "哈欠带带"
+roomid = 983274
+
+# 设置隐私
+[set_private]
+enable = false
+
+
+# 硬币兑换勋章
+[coin_to_medal]
+enable = false
+buy_uid = 1
+
+# 银瓜子兑换硬币
+[sliver_to_coin]
+enable = false
+
+# 查询直播站实物中奖记录
+[query_live_reward]
+enable = false
+
+# 实物抽奖配置
+[draw_lottery]
+enable = false
+aid = 396
+number = 1
+
+# 查询系统通知
+[query_system_notice]
+enable = false
+
+# 评论点赞
+[comment_like]
+enable = false
+type = 1 # 作品类型(视频video:1  活动activity:4 相簿gallery:11 文章article:12)
+oid = 68150115 # 作品ID
+rpid = 1971683604 # 评论ID
+
+# 评论点踩
+[comment_hate]
+enable = false
+type = 1
+oid = 68150115
+rpid = 1971683604

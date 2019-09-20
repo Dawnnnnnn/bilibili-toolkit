@@ -64,6 +64,9 @@ def get_cookies_file(filename):
                 line = line.strip('\n')
                 cookies.append(line)
         printer.printer(f'从{filename}文件里共获取到{len(cookies)}个账号cookie', "Running", "green")
+        if len(cookies) == 0:
+            printer.printer(f'cookies.txt内为空，继续读取accounts.txt文件', "Running", "green")
+            return False
         return cookies
     except Exception as e:
         printer.printer(f'从{filename}文件里读取账号错误{e}', "Error", "red")

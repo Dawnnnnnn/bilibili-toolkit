@@ -1,6 +1,4 @@
 # Byte-compiled / optimized / DLL files
-testa.py
-testb.py
 answer_machine.py
 __pycache__/
 *.py[cod]
@@ -111,7 +109,7 @@ venv.bak/
 test/
 
 # local
-*.txt
+is_ban.txt
 
-# toml
-*.toml
+
+
