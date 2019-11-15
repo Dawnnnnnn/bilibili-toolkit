@@ -77,7 +77,7 @@ class Main:
             await check_account_state_run(uid, cookie, uname)
         if config['destory_account']['enable']:
             printer.printer("危险操作，自己写await", "DEBUG", "yellow")
-            await destory_account_run(uid, access_token, cookie, csrf, uname)
+            #await destory_account_run(uid, access_token, cookie, csrf, uname)
         if config['make_fake_userinfo']['enable']:
             await make_fake_info_run(uid, cookie, csrf, uname)
         if config['level_task']['enable']:
