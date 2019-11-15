@@ -3,11 +3,12 @@
 # @Time    : 2019/9/21 00:16
 # @Author  : Dawnnnnnn
 # @Contact: 1050596704@qq.com
+import asyncio
 from apis import *
 
 
 async def check_account_state_run(uid, cookie, suname):
-    response_1 = await userinfo_1(uid, cookie, suname)
+    # response_1 = await userinfo_1(uid, cookie, suname)
     # printer.printer(response_1,"DEBUG","yellow")
     response_2 = await userinfo_2(cookie, suname)
     # printer.printer(response_2,"DEBUG","yellow")
@@ -16,7 +17,7 @@ async def check_account_state_run(uid, cookie, suname):
     response_4 = await userinfo_4(cookie, suname)
     # printer.printer(response_4,"DEBUG","yellow")
     printer.printer(
-        f"{response_1['data']['name']}({uid}) 封禁状态:{response_1['data']['silence']} 用户类型:{response_2['data']['userStatus']} 主站等级:{response_2['data']['level_info']['current_level']}({response_2['data']['level_info']['current_exp']}/{response_2['data']['level_info']['next_exp']}) 硬币:{response_2['data']['coins']} 直播站等级:{response_4['data']['user_level']}({response_4['data']['user_intimacy']}/{response_4['data']['user_next_intimacy']}) 银瓜子:{response_4['data']['silver']}",
+        f"({uid}) 封禁状态: 用户类型:{response_2['data']['userStatus']} 主站等级:{response_2['data']['level_info']['current_level']}({response_2['data']['level_info']['current_exp']}/{response_2['data']['level_info']['next_exp']}) 硬币:{response_2['data']['coins']} 直播站等级:{response_4['data']['user_level']}({response_4['data']['user_intimacy']}/{response_4['data']['user_next_intimacy']}) 银瓜子:{response_4['data']['silver']}",
         "INFO", "blue")
 
 
@@ -59,13 +60,23 @@ async def destory_account_run(uid, access_key, cookie, csrf, suname):
     # 删除关注
     await delete_all_follows(cookie, csrf, suname)
     # 删除粉丝
-    await delete_all_fans(cookie, csrf, suname)
+    await delete_all_fans(uid, cookie, csrf, suname)
     # 删除收藏夹
     await delete_all_favorite_pack(uid, cookie, csrf, suname)
     # 删除直播勋章
     await delete_all_medals(cookie, csrf, suname)
     # 删除所有动态
     await delete_all_dynamic_ids(uid, cookie, access_key, suname)
+    # 退出友爱社
+    await quit_unionfans(cookie, suname)
+    # 删除订阅番剧
+    response = await get_owner_bangumi_list(uid, cookie, suname)
+    for k in range(0, len(response['data']['list'])):
+        await del_bangumi_in_follow(response['data']['list'][k]['season_id'], cookie, csrf, suname)
+    # 随机消耗硬币
+    # for _ in range(200):
+    #     av_num = await get_attention_video_or_random(cookie, suname)
+    #     await combo(av_num, csrf, cookie, suname)
 
 
 async def draw_lottery_run(aid, number, cookie, suname):
@@ -130,3 +141,24 @@ async def sliver_to_coin_run(cookie, csrf, suname):
 
 async def wear_medal_run(medal, cookie, suname):
     await wear_medal(medal, cookie, suname)
+
+
+async def act_id_lottery_run(act_id, get_chance, sleep, cookie, suname):
+    for i in range(0, get_chance):
+        await act_id_get_chance(act_id, cookie, suname)
+        await asyncio.sleep(sleep)
+    response = await act_id_check_chance(act_id, cookie, suname)
+    if response['data']['times'] >= 90:
+        pass
+    else:
+        for _ in range(0, response['data']['times']):
+            await act_id_lottery(act_id, cookie, suname)
+            await asyncio.sleep(sleep)
+
+
+async def comment_send_run(oid, otype, message, cookie, csrf, suname):
+    await comment_send(oid, otype, message, cookie, csrf, suname)
+
+
+async def comment_reply_run(oid, otype, message, root, parent, cookie, csrf, suname):
+    await comment_reply(oid, otype, root, parent, message, cookie, csrf, suname)

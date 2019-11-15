@@ -88,3 +88,25 @@ enable = false
 type = 1
 oid = 68150115
 rpid = 1971683604
+
+# 评论发送
+[comment_send]
+enable = false
+type = 1
+oid = 75677777
+
+# 评论回复
+[comment_reply]
+enable = true
+type = 1
+oid = 75677777
+root = 2107420777
+parent = 2107420777
+
+# actid抽奖
+[act_id_lottery]
+enable = false
+act_id = 247
+get_chance = 1
+sleep = 0.1
+

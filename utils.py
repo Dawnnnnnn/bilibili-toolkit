@@ -73,6 +73,23 @@ def get_cookies_file(filename):
         exit()
 
 
+def get_message_file(filename):
+    msgs = []
+    try:
+        with open(filename) as f:
+            for line in f.readlines():
+                line = line.strip('\n')
+                msgs.append(line)
+        printer.printer(f'从{filename}文件里共获取到{len(msgs)}句预置信息', "Running", "green")
+        if len(msgs) == 0:
+            printer.printer(f'msgs.txt内为空', "Running", "green")
+            return False
+        return msgs
+    except Exception as e:
+        printer.printer(f'从{filename}文件里读取账号错误{e}', "Error", "red")
+        exit()
+
+
 # 自动判断类型生成loop
 def switch_sys_loop():
     sys_type = platform.system()

@@ -1,7 +1,7 @@
 <h1 align="center">bilibili-toolkit</h1>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-2019.9.21-green.svg?longCache=true&style=for-the-badge">
+<img src="https://img.shields.io/badge/version-2019.11.15-green.svg?longCache=true&style=for-the-badge">
 <img src="https://img.shields.io/badge/license-MIT-blue.svg?longCache=true&style=for-the-badge">
 </p>
 
@@ -25,7 +25,7 @@
 |combo               |2019/9/21      |一键五连                       |
 |comment_hate        |2019/9/21      |给评论点踩                      |
 |comment_like        |2019/9/21      |给评论点赞                      |
-|destory_account     |2019/9/21      |一键清空账号资产                 |
+|destory_account     |2019/11/15     |一键清空账号资产                 |
 |draw_lottery        |2019/9/21      |实物抽奖                        |
 |follow              |2019/9/21      |关注                           |
 |level_task          |2019/9/21      |主站升级三连任务                 |
@@ -36,7 +36,9 @@
 |set_private         |2019/9/21      |设置账号隐私                    |
 |sliver_to_coin      |2019/9/21      |银瓜子兑换硬币                   |
 |wear_medal          |2019/9/21      |佩戴勋章                        |
-
+|act_id_lottery      |2019/11/15     |根据act_id进行活动抽奖           |
+|comment_send        |2019/11/15     |评论发送                        |
+|comment_reply       |2019/11/15     |给评论回复                      |
 
 ## 使用指南
 

@@ -17,6 +17,7 @@ class Main:
     def __init__(self):
         self.accounts = []
         self.cookies = []
+        self.msgs = []
         self.threads = 0
 
     def run(self):
@@ -26,6 +27,7 @@ class Main:
                 self.accounts = get_accounts_file('accounts.txt')
         elif os.path.exists("accounts.txt"):
             self.accounts = get_accounts_file('accounts.txt')
+        self.msgs = get_message_file("messages.txt")
         loop = switch_sys_loop()
         if self.cookies:
             self.threads = len(self.cookies)
@@ -75,6 +77,7 @@ class Main:
             await check_account_state_run(uid, cookie, uname)
         if config['destory_account']['enable']:
             printer.printer("危险操作，自己写await", "DEBUG", "yellow")
+            await destory_account_run(uid, access_token, cookie, csrf, uname)
         if config['make_fake_userinfo']['enable']:
             await make_fake_info_run(uid, cookie, csrf, uname)
         if config['level_task']['enable']:
@@ -126,7 +129,29 @@ class Main:
             oid = config['comment_hate']['oid']
             rpid = config['comment_hate']['rpid']
             await comment_hate_run(oid, otype, rpid, cookie, csrf, uname)
-
+        if config['act_id_lottery']['enable']:
+            act_id = int(config['act_id_lottery']['act_id'])
+            get_chance = int(config['act_id_lottery']['get_chance'])
+            sleep = int(config['act_id_lottery']['sleep'])
+            await act_id_lottery_run(act_id, get_chance, sleep, cookie, uname)
+        if config['comment_send']['enable']:
+            if len(self.msgs) > 0:
+                message = self.msgs.pop()
+                otype = int(config['comment_send']['type'])
+                oid = int(config['comment_send']['oid'])
+                await comment_send_run(oid, otype, message, cookie, csrf, uname)
+            else:
+                printer.printer(f"预置信息数为0,不再进行评论", "Info", "blue")
+        if config['comment_reply']['enable']:
+            if len(self.msgs) > 0:
+                message = self.msgs.pop()
+                otype = int(config['comment_reply']['type'])
+                oid = int(config['comment_reply']['oid'])
+                root = int(config['comment_reply']['root'])
+                parent = int(config['comment_reply']['parent'])
+                await comment_reply_run(oid, otype, message, root, parent, cookie, csrf, uname)
+            else:
+                printer.printer(f"预置信息数为0,不再进行评论", "Info", "blue")
         await request.ssion[uname].close()
         del request.ssion[uname]
 
