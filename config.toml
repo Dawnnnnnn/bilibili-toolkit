@@ -97,7 +97,7 @@ oid = 75677777
 
 # 评论回复
 [comment_reply]
-enable = true
+enable = false
 type = 1
 oid = 75677777
 root = 2107420777

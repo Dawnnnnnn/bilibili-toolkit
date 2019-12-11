@@ -11,6 +11,13 @@ import string
 from urllib import parse
 from utils import *
 
+# temporary app parameter
+appkey = '4409e2ce8ffd12b8'
+build = '101800'
+# device = 'android_tv_yst'
+mobi_app = 'android_tv_yst'
+app_secret = '59b43e04ad6965f34319062b478f83dd'
+
 
 class BiliLogin:
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36"
@@ -37,16 +44,22 @@ class BiliLogin:
             return None
 
     def getSign(self, param):
-        salt = "560c52ccd288fed045859ed18bffd973"
+        salt = "59b43e04ad6965f34319062b478f83dd"
         signHash = hashlib.md5()
         signHash.update(f"{param}{salt}".encode())
         return signHash.hexdigest()
 
+    def access_token_2_cookies(self, access_token):
+        params = f"access_key={access_token}&appkey={appkey}&gourl=https%3A%2F%2Faccount.bilibili.com%2Faccount%2Fhome"
+        url = f"https://passport.bilibili.com/api/login/sso?{params}&sign={self.getSign(params)}"
+        response = requests.get(url, allow_redirects=False)
+        return response.cookies.get_dict(domain=".bilibili.com")
+
     # 登录
     def login(self, username, password):
         self.username, self.password = username, password
-        appKey = "1d8b6e7d45233436"
-        url = "https://passport.bilibili.com/api/oauth2/getKey"
+        appKey = "4409e2ce8ffd12b8"
+        url = "https://passport.snm0516.aisee.tv/api/oauth2/getKey"
         data = {'appkey': appKey,
                 'sign': self.getSign(f"appkey={appKey}")}
         response = self.post(url, data=data)
@@ -57,16 +70,16 @@ class BiliLogin:
         else:
             printer.printer(f"Key获取失败 {response}", "Error", "red")
             return False
-        url = "https://passport.bilibili.com/api/v2/oauth2/login"
-        param = f"appkey={appKey}&password={parse.quote_plus(base64.b64encode(rsa.encrypt(f'{keyHash}{self.password}'.encode(), pubKey)))}&username={parse.quote_plus(self.username)}"
+        url = "https://passport.snm0516.aisee.tv/api/tv/login"
+        param = f"appkey={appkey}&build={build}&captcha=&channel=master&guid=XYEBAA3E54D502E37BD606F0589A356902FCF&mobi_app={mobi_app}&password={parse.quote_plus(base64.b64encode(rsa.encrypt(f'{keyHash}{self.password}'.encode(), pubKey)))}&platform=android&token=5598158bcd8511e2&ts=0&username={parse.quote_plus(self.username)}"
         data = f"{param}&sign={self.getSign(param)}"
         headers = {'Content-type': "application/x-www-form-urlencoded"}
         response = self.post(url, data=data, headers=headers)
         while response and response.get('code') == -105:
             self.cookie = f"sid={''.join(random.choices(string.ascii_lowercase + string.digits, k=8))}"
-            url = "https://passport.bilibili.com/captcha"
+            url = "https://passport.snm0516.aisee.tv/api/captcha?token=5598158bcd8511e2"
             headers = {'Cookie': self.cookie,
-                       'Host': "passport.bilibili.com",
+                       'Host': "snm0516.aisee.tv",
                        'User-Agent': BiliLogin.ua}
             response = self.get(url, headers=headers, decode=False)
             if response is None:
@@ -77,15 +90,17 @@ class BiliLogin:
             json = {'image': img}
             response = self.post(url, json=json, decode=True)
             printer.printer(f"验证码识别结果为: {response['message']}", "Running", "green")
-            url = "https://passport.bilibili.com/api/v2/oauth2/login"
-            param = f"appkey={appKey}&captcha={response['message']}&password={parse.quote_plus(base64.b64encode(rsa.encrypt(f'{keyHash}{self.password}'.encode(), pubKey)))}&username={parse.quote_plus(self.username)}"
+            url = "https://passport.snm0516.aisee.tv/api/tv/login"
+            param = f"appkey={appKey}&captcha={response['message']}&channel=master&guid=XYEBAA3E54D502E37BD606F0589A356902FCF&mobi_app={mobi_app}&password={parse.quote_plus(base64.b64encode(rsa.encrypt(f'{keyHash}{self.password}'.encode(), pubKey)))}&platform=android&token=5598158bcd8511e2&ts=0&username={parse.quote_plus(self.username)}"
             data = f"{param}&sign={self.getSign(param)}"
             headers = {'Content-type': "application/x-www-form-urlencoded",
                        'Cookie': self.cookie}
             response = self.post(url, data=data, headers=headers)
         if response and response.get('code') == 0:
-            self.cookie = ";".join(f"{i['name']}={i['value']}" for i in
-                                   response['data']['cookie_info']['cookies'])
+            cookie_info = self.access_token_2_cookies(response['data']['token_info']['access_token'])
+            for key, value in cookie_info.items():
+                self.cookie = self.cookie + key + "=" + value + ";"
+
             self.access_token = response['data']['token_info']['access_token']
             printer.printer(f"{self.username}登录成功 {self.cookie} {self.access_token}", "Running", "green")
             with open("cookies.txt", "a+", encoding="utf-8")as f:
